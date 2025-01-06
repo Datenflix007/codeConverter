@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Language Translator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: #333;
+        }
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .language-selector select {
+            padding: 5px;
+            font-size: 1rem;
+        }
+        .arrow {
+            margin: 0 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e4e4e4;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .output pre {
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Coding Language Translator</h1>
+    </header>
+
+    <div class="language-selector">
+        <select id="startLanguage">
+            <option disabled selected>Start-Programmiersprache</option>
+            <option value="java">Java</option>
+        </select>
+        <span class="arrow">→</span>
+        <select id="targetLanguage">
+            <option disabled selected>Ziel-Programmiersprache</option>
+            <option value="javascript">JavaScript</option>
+        </select>
+    </div>
+
+    <form id="javaForm">
+        <label for="javaCode">Enter Code (separate instructions with semicolons):</label>
+        <textarea id="javaCode" placeholder="Example: int x = 10; System.out.println(x);"></textarea>
+        <button type="submit">Convert</button>
+    </form>
+
+    <div id="output" class="output" style="display:none;">
+        <h2>Converted Code:</h2>
+        <pre id="jsOutput"></pre>
+    </div>
+
+    <script>
+        document.getElementById('javaForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get Java code from the textarea
+            const javaCode = document.getElementById('javaCode').value.trim();
+
+            // Split the Java code into instructions by semicolon
+            const javaInstructions = javaCode.split(';').map(instr => instr.trim()).filter(instr => instr !== "");
+
+            // Function to convert Java instruction to JavaScript
+            function convertToJavaScript(javaInstruction) {
+                if (javaInstruction.startsWith('int ') || javaInstruction.startsWith('double ') || javaInstruction.startsWith('float ')) {
+                    return javaInstruction.replace(/^(int|double|float) /, 'let ');
+                } else if (javaInstruction.startsWith('System.out.println')) {
+                    return javaInstruction.replace('System.out.println', 'console.log').replace(/\((.*)\)/, '($1);');
+                } else {
+                    return javaInstruction; // Default: no conversion
+                }
+            }
+
+            // Convert all Java instructions to JavaScript
+            const jsInstructions = javaInstructions.map(convertToJavaScript);
+
+            // Display the converted JavaScript code
+            const outputDiv = document.getElementById('output');
+            const jsOutput = document.getElementById('jsOutput');
+
+            jsOutput.textContent = jsInstructions.join(';\n');
+
+            outputDiv.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
