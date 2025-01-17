@@ -1,0 +1,104 @@
+Hier ist der korrigierte Code. Ich habe sichergestellt, dass das Element vor der ersten Schleife korrekt übernommen wird:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Java zu JavaScript Konverter</title>
+</head>
+<body>
+    <script>
+        // Schritt 1: Funktion zum Aufteilen des Eingabestrings in einzelne Elemente
+        function trimAllElements(inputString) {
+            let matches = []; // Array zum Speichern der Teile der Schleifen und anderen Elemente
+
+            // Regulärer Ausdruck für for-Schleifen
+            let cleanedString = inputString.replace(/for\s*\([^{}]*\)\s*\{(.*?)\}/gs, (match) => {
+                // Schleifenkopf und Körper extrahieren
+                let head = match.match(/for\s*\([^{}]*\)\s*\{/)[0];
+                let body = match.match(/\{(.*?)\}/s)[1].trim();
+                let indentedBody = indentBody(body, 1); // Body einrücken
+
+                // Teile der Schleife speichern
+                matches.push(head, `${indentedBody}`, "\t}");
+                return ""; // Entferne die Schleife aus dem String
+            });
+
+            // Zerlege den String anhand von Semikolons und schließenden Klammern
+            let elements = cleanedString.split(/;|(?<=\})/).map(element => element.trim()).filter(element => element !== "");
+
+            // Füge alle gefundenen Teile wieder zusammen
+            let resultList = [];
+            let forIndex = 0;
+
+            elements.forEach(element => {
+                if (matches[forIndex]) {
+                    resultList.push(matches[forIndex++]); // Schleifenkopf
+                    resultList.push(matches[forIndex++]); // Schleifenrumpf
+                    resultList.push(matches[forIndex++]); // Schließende Klammer
+                } else {
+                    resultList.push(element); // Füge andere Elemente (wie Variablen) hinzu
+                }
+            });
+
+            // Falls keine Schleifen im String vorhanden sind, nehme den gesamten String als Ergebnis
+            if (matches.length === 0 && resultList.length === 0) {
+                resultList.push(inputString.trim()); // Wenn nichts gefunden wurde, nimm den Eingabe-String
+            }
+
+            return resultList;
+        }
+
+        // Funktion zum Einrücken des Schleifenrumpfs
+        function indentBody(body, level) {
+            let indent = "\t".repeat(level); // Berechne die Anzahl der Tabs
+
+            // Einrücken für verschachtelte Schleifen
+            let regexForNested = /for\s*\([^{}]*\)\s*\{.*?\}/gs;
+            body = body.replace(regexForNested, (match) => {
+                let head = match.match(/for\s*\([^{}]*\)\s*\{/)[0];
+                let nestedBody = match.match(/\{((?:[^{}]*|\{[^{}]*\})*?)\}/s)[1].trim();
+                return `${head}\n${indent}${indentBody(nestedBody, level + 1)}`;
+            });
+
+            return body.split("\n").map(line => indent + line).join("\n");
+        }
+
+        // Schritt 2: Funktion zur Umwandlung von Java-Syntax in JavaScript-Syntax
+        function javaToJavaScript(javaCodeArray) {
+            let javaScriptCode = javaCodeArray.map(line => {
+                // Ersetze Java-Syntax durch JavaScript-Syntax
+                return line
+                    .replace(/\bint\b|\bdouble\b|\blong\b/g, "let") // Java-Datentypen zu JavaScript
+                    .replace(/\bSystem\.out\.println\b/g, "console.log"); // Java-Ausgabe zu JS
+            });
+            return javaScriptCode;
+        }
+
+        // Beispiel-Input-String mit Java-Code
+        let inputString = `int k = 3;;
+                           for(int i = 0; i < 10; i++) {
+                               System.out.println(i);
+                           }
+                           double d = 3.14;
+                           for(int j = 0; j < 5; j++) {
+                               System.out.println(j);
+                           }
+                           long l = 1234567890;
+                           Element3; 
+                           Element4;;;`
+                           ;
+
+        // Schritt 1: Zerlege den String in einzelne Elemente
+        let trimmedElements = trimAllElements(inputString);
+
+        // Schritt 2: Wandle Java-Code in JavaScript um
+        let javaScriptCode = javaToJavaScript(trimmedElements);
+
+        // Ergebnisse ausgeben
+        console.log("Originaler Java Code: ", inputString);
+        console.log("Getrimmte und umgewandelte JavaScript Elemente: ", javaScriptCode);
+    </script>
+</body>
+</html>

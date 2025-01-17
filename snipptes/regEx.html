@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Page Title</title>
+
+
+</head>
+<body>
+    <script>
+        // Ursprünglicher String
+        let inputString = "Die Telefonnummer ist 123-456-7890. Bitte rufen Sie mich an.";
+
+        // Regulärer Ausdruck, um Telefonnummern im Format "123-456-7890" zu finden
+        let regex = /\b\d{3}-\d{3}-\d{4}\b/g;
+
+        // Ersatztext
+        let replacement = "[VERTRAULICH]";
+
+        // String analysieren und ersetzen
+        let resultString = inputString.replace(regex, replacement);
+
+        // Ergebnis ausgeben
+        //console.log("Originaler String: ", inputString);
+        //console.log("Ersetzter String: ", resultString);
+
+    </script>
+
+    <script>       
+        // Ursprünglicher String
+        let inputString1 = 'let varDeclaration = "int varName = 3";';
+
+        // Regulärer Ausdruck, um das innere Format 'int varName = 3' zu extrahieren
+        let regex1 = /"int\s+\w+\s*=\s*(\d+)"/;
+
+        // String analysieren und transformieren
+        let resultString1 = inputString1.replace(regex1, (_, value) => value);
+
+        // Ergebnis ausgeben
+        //console.log("Originaler String: ", inputString1);
+        //console.log("Transformierter String: ", resultString1);
+
+    </script>
+
+    <script>
+       // Ursprünglicher String
+        let inputString2 = "for(int i = 0; i<10; i++){ console.log(i); }";
+
+        // Regulärer Ausdruck, um den Schleifenkopf und den Schleifenblock zu erfassen
+        let regex2 = /for\s*\(\s*int\s*(.*?)\)\s*\{(.*?)\}/s;
+
+        // Extrahiere den Schleifenkopf und den Schleifenblock
+        let match = inputString2.match(regex2); // Matchen von Kopf und Block
+        let loopHead = match ? match[1] : "";   // Speichere den Kopf (zwischen den runden Klammern)
+        let loopBody = match ? match[2].trim() : ""; // Speichere den Block (zwischen den geschweiften Klammern), entferne überflüssige Leerzeichen
+
+        // Ersetze "int" durch "let" im Schleifenkopf und baue die transformierte Schleife
+        let resultString2 = inputString2.replace(regex2, `for(let ${loopHead}) { ${loopBody} }`);
+
+        // Ergebnisse ausgeben
+        console.log("Originaler String: ", inputString2);
+        console.log("Transformierter String: ", resultString2);
+        console.log("Schleifenkopf (loopHead): ", loopHead);
+        console.log("Schleifenblock (loopBody): ", loopBody);
+
+
+
+    </script>
+</body>
+</html>
